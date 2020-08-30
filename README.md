@@ -60,7 +60,7 @@
   - [查准率-查全率曲线](#precision-x-recall-curve)
   - [平均查准率](#average-precision)
     - [11点插值](#11-point-interpolation)
-    - [所有点插值](#interpolating-all-points)
+    - [全点插值](#interpolating-all-points)
 - [**如何使用此项目**](#how-to-use-this-project)
 - [参考](#references)
 
@@ -206,18 +206,49 @@ In this case, instead of using the precision observed at only few points, the AP
 To make things more clear, we provided an example comparing both interpolations.
 
 
-#### An ilustrated example 
+#### 一个示例 
 
-An example helps us understand better the concept of the interpolated average precision. Consider the detections below:
+一个例子可以帮助我们更好地理解插值平均查准率的概念:
   
 <!--- Image samples 1 --->
 <p align="center">
 <img src="https://github.com/rafaelpadilla/Object-Detection-Metrics/blob/master/aux_images/samples_1_v2.png" align="center"/></p>
-  
-There are 7 images with 15 ground truth objects representented by the green bounding boxes and 24 detected objects represented by the red bounding boxes. Each detected object has a confidence level and is identified by a letter (A,B,...,Y).  
 
-The following table shows the bounding boxes with their corresponding confidences. The last column identifies the detections as TP or FP. In this example a TP is considered if IOU ![](http://latex.codecogs.com/gif.latex?%5Cgeq) 30%, otherwise it is a FP. By looking at the images above we can roughly tell if the detections are TP or FP.
+有7张图像，其中有15个以绿色边框表示的真实目标和24个红色边框表示的检测目标。 每个检测到的目标都有一个置信度，并由字母（A，B，...，Y）标识
+下表显示了具有相应置信度的边框。 最后一列将检测标识为TP或FP。 在本例中，如果IOU！[](http://latex.codecogs.com/gif.latex？%5Cgeq)超过30%，则认为是TP，否则就是FP。 通过查看上面的图像，我们可以大致判断检测到的是TP还是FP。
 
+<!--- Table 1 --->
+<p align="center">
+<img src="https://github.com/rafaelpadilla/Object-Detection-Metrics/blob/master/aux_images/table_1_v2.png" align="center"/></p>
+
+<!---
+| 图片 | 检测结果 | 置信度 | TP 或是 FP |
+|:------:|:----------:|:-----------:|:--------:|
+| Image 1 | A | 88% | FP |
+| Image 1 | B | 70% | TP |
+| Image 1 |	C	| 80% | FP |
+| Image 2 |	D	| 71% | FP |
+| Image 2 |	E	| 54% | TP |
+| Image 2 |	F	| 74% | FP |
+| Image 3 |	G	| 18% | TP |
+| Image 3 |	H	| 67% | FP |
+| Image 3 |	I	| 38% | FP |
+| Image 3 |	J	| 91% | TP |
+| Image 3 |	K	| 44% | FP |
+| Image 4 |	L	| 35% | FP |
+| Image 4 |	M	| 78% | FP |
+| Image 4 |	N	| 45% | FP |
+| Image 4 |	O	| 14% | FP |
+| Image 5 |	P	| 62% | TP |
+| Image 5 |	Q	| 44% | FP |
+| Image 5 |	R	| 95% | TP |
+| Image 5 |	S	| 23% | FP |
+| Image 6 |	T	| 45% | FP |
+| Image 6 |	U	| 84% | FP |
+| Image 6 |	V	| 43% | FP |
+| Image 7 |	X	| 48% | TP |
+| Image 7 |	Y	| 95% | FP |
+--->
 <!--- Table 1 --->
 <p align="center">
 <img src="https://github.com/rafaelpadilla/Object-Detection-Metrics/blob/master/aux_images/table_1_v2.png" align="center"/></p>
@@ -251,9 +282,10 @@ The following table shows the bounding boxes with their corresponding confidence
 | Image 7 |	Y	| 95% | FP |
 --->
 
-In some images there are more than one detection overlapping a ground truth (Images 2, 3, 4, 5, 6 and 7). For those cases the first detection is considered TP while the others are FP. This rule is applied by the PASCAL VOC 2012 metric: "e.g. 5 detections (TP) of a single object is counted as 1 correct detection and 4 false detections”.
 
-The Precision x Recall curve is plotted by calculating the precision and recall values of the accumulated TP or FP detections. For this, first we need to order the detections by their confidences, then we calculate the precision and recall for each accumulated detection as shown in the table below: 
+在某些图像中，有多个检测边框和真实边框重叠(图像2、3、4、5、6和7)。 对于这些情况，第一个检测被认为是TP，而其他检测是FP。 该规则由Pascal VOC 2012评估应用：“例如，单个对象的5个检测(TP)被算作1个正确检测和4个错误检测”。
+
+PR曲线是通过计算累积的TP或FP检测的查准率和查全率绘制的。 为此，我们首先需要根据检测的置信度对检测进行排序，然后累计计算每个检测的查准率和查全率，如下表所示：
 
 <!--- Table 2 --->
 <p align="center">
@@ -288,14 +320,14 @@ The Precision x Recall curve is plotted by calculating the precision and recall 
 | Image 4 |	O	| 14% | 0 | 1 | 7 | 17 | 0.2916 | 0.4666 |
 --->
  
- Plotting the precision and recall values we have the following *Precision x Recall curve*:
- 
+绘制PR图， 如下图所示：
+
  <!--- Precision x Recall graph --->
 <p align="center">
 <img src="https://github.com/rafaelpadilla/Object-Detection-Metrics/blob/master/aux_images/precision_recall_example_1_v2.png" align="center"/>
 </p>
- 
-As mentioned before, there are two different ways to measure the interpolted average precision: **11-point interpolation** and **interpolating all points**. Below we make a comparisson between them:
+
+如上所述，评估插值平均查准率有两种不同的方式：**11点插值**和**全点插值**。 下面我们对它们进行比较： 
 
 #### Calculating the 11-point interpolation
 
@@ -343,9 +375,9 @@ Looking at the plot above, we can divide the AUC into 4 areas (A1, A2, A3 and A4
 ![](http://latex.codecogs.com/gif.latex?AP%20%3D%200.24560955)  
 ![](http://latex.codecogs.com/gif.latex?AP%20%3D%20%5Cmathbf%7B24.56%5C%25%7D)  
 
-两种不同插值方法之间的结果略有不同：所有点插值和11点插值分别为24.56％和26.84％。  
+两种不同插值方法之间的结果略有不同：全点插值和11点插值分别为24.56％和26.84％。  
 
-我们的默认实现与VOC Pascal相同：所有点插值。 如果要使用11点插值，请更改使用函数的参数```method=MethodAveragePrecision.EveryPointInterpolation``` 到 ```method=MethodAveragePrecision.ElevenPointInterpolation```.   
+我们的默认实现与VOC Pascal相同：全点插值。 如果要使用11点插值，请更改使用函数的参数```method=MethodAveragePrecision.EveryPointInterpolation``` 到 ```method=MethodAveragePrecision.ElevenPointInterpolation```.   
 
 如果要重现这些结果，请参阅 **[样例2](https://github.com/rafaelpadilla/Object-Detection-Metrics/tree/master/samples/sample_2/)**.
 <!--In order to evaluate your detections, you just need a simple list of `Detection` objects. A `Detection` object is a very simple class containing the class id, class probability and bounding boxes coordinates of the detected objects. This same structure is used for the groundtruth detections.-->

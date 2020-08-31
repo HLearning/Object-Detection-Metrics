@@ -153,8 +153,7 @@ _阈值_: 取决于评估指标, 通常取值：50%, 75% 或 95%.
 
 从2010年开始，PASCAL VOC挑战赛计算AP的方法发生了变化. 目前, **PASCAL VOC挑战执行的插值使用所有数据点，而不是插值只有11个等间隔的点，如他们所述[论文](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.157.5766&rep=rep1&type=pdf)**. 因为我们希望重现它们的默认实现，所以我们的默认代码(如下文所示)遵循它们的最新应用程序(插值所有数据点)。 但是，我们也提供了11点插值方法。
 
-#### 11-point interpolation
-
+#### 11点插值
 The 11-point interpolation tries to summarize the shape of the Precision x Recall curve by averaging the precision at a set of eleven equally spaced recall levels [0, 0.1, 0.2, ... , 1]:
 
 <p align="center">
@@ -177,7 +176,7 @@ where ![](http://latex.codecogs.com/gif.latex?%5Crho%5Cleft%20%28%20%5Ctilde%7Br
 
 Instead of using the precision observed at each point, the AP is obtained by interpolating the precision only at the 11 levels ![](http://latex.codecogs.com/gif.latex?r) taking the **maximum precision whose recall value is greater than ![](http://latex.codecogs.com/gif.latex?r)**.
 
-#### Interpolating all points
+#### 全点插值
 
 Instead of interpolating only in the 11 equally spaced points, you could interpolate through all points <img src="https://latex.codecogs.com/gif.latex?n"> in such way that:
 
@@ -249,39 +248,6 @@ To make things more clear, we provided an example comparing both interpolations.
 | Image 7 |	X	| 48% | TP |
 | Image 7 |	Y	| 95% | FP |
 --->
-<!--- Table 1 --->
-<p align="center">
-<img src="https://github.com/rafaelpadilla/Object-Detection-Metrics/blob/master/aux_images/table_1_v2.png" align="center"/></p>
-
-<!---
-| Images | Detections | Confidences | TP or FP |
-|:------:|:----------:|:-----------:|:--------:|
-| Image 1 | A | 88% | FP |
-| Image 1 | B | 70% | TP |
-| Image 1 |	C	| 80% | FP |
-| Image 2 |	D	| 71% | FP |
-| Image 2 |	E	| 54% | TP |
-| Image 2 |	F	| 74% | FP |
-| Image 3 |	G	| 18% | TP |
-| Image 3 |	H	| 67% | FP |
-| Image 3 |	I	| 38% | FP |
-| Image 3 |	J	| 91% | TP |
-| Image 3 |	K	| 44% | FP |
-| Image 4 |	L	| 35% | FP |
-| Image 4 |	M	| 78% | FP |
-| Image 4 |	N	| 45% | FP |
-| Image 4 |	O	| 14% | FP |
-| Image 5 |	P	| 62% | TP |
-| Image 5 |	Q	| 44% | FP |
-| Image 5 |	R	| 95% | TP |
-| Image 5 |	S	| 23% | FP |
-| Image 6 |	T	| 45% | FP |
-| Image 6 |	U	| 84% | FP |
-| Image 6 |	V	| 43% | FP |
-| Image 7 |	X	| 48% | TP |
-| Image 7 |	Y	| 95% | FP |
---->
-
 
 在某些图像中，有多个检测边框和真实边框重叠(图像2、3、4、5、6和7)。 对于这些情况，第一个检测被认为是TP，而其他检测是FP。 该规则由Pascal VOC 2012评估应用：“例如，单个对象的5个检测(TP)被算作1个正确检测和4个错误检测”。
 
